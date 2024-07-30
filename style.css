@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #000;
+}
+
+#container {
+    width: 100vw;
+    height: 100vh;
+}
+
+/* facciamo i bottoni fighi */
+button {
+    background: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #fff;
+    color: #000;
+}

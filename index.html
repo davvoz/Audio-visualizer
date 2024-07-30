@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Visualizer 3D</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --background-color: #1a1a1a;
+            --text-color: #ffffff;
+            --disabled-color: #555555;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #container {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        #controls {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-top: 1px solid var(--primary-color);
+        }
+
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: var(--secondary-color);
+        }
+
+        .btn:disabled {
+            background-color: var(--disabled-color);
+            cursor: not-allowed;
+        }
+
+        #audioFileInput {
+            display: none;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #trackInfo {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        #progressContainer {
+            width: 100%;
+            background-color: #444;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        #progressBar {
+            width: 0;
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.1s linear;
+        }
+
+        #trackList {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid #444;
+            border-radius: 5px;
+        }
+
+        .track {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            transition: background-color 0.3s ease;
+        }
+
+        .track:last-child {
+            border-bottom: none;
+        }
+
+        .track.playing {
+            background-color: var(--secondary-color);
+        }
+
+        .track-name {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .track .btn {
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div id="controls">
+        <div id="trackInfo">Nessuna traccia selezionata</div>
+        <div id="progressContainer">
+            <div id="progressBar"></div>
+        </div>
+        <div class="control-group">
+            <button id="previousButton" class="btn" disabled>Precedente</button>
+            <button id="playButton" class="btn">Play</button>
+            <button id="nextButton" class="btn" disabled>Successivo</button>
+            <label for="audioFileInput" class="file-input-label">
+                Carica Audio
+                <input type="file" id="audioFileInput" accept="audio/*" multiple>
+            </label>
+        </div>
+        <div id="trackList"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/dat.gui/build/dat.gui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ccapture.js/1.1.0/CCapture.all.min.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
+                "three/examples/jsm/postprocessing/EffectComposer.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/EffectComposer.js",
+                "three/examples/jsm/postprocessing/RenderPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/RenderPass.js",
+                "three/examples/jsm/postprocessing/UnrealBloomPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/UnrealBloomPass.js",
+                "three/examples/jsm/postprocessing/ShaderPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/ShaderPass.js"
+            }
+        }
+    </script>
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>

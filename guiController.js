@@ -1,20 +1,20 @@
-import { BarVisualizer } from './barVisualizer.js';
-import { CircleVisualizer } from './circleVisualizer.js';
-import { TunnelVisualizer } from './tunnelVisualizer.js';
-import { InteractiveGalaxyVisualizer } from './interactiveGalaxyVisualizer.js';
-import { PsychedelicCubesVisualizer } from './psychedelicCubesVisualizer.js';
-import { BrutalistTetrahedronsVisualizer } from './brutalistTetrahedronsVisualizer.js';
-import { Wave3DVisualizer } from './wave3DVisualizer.js';
-import { CubeTunnelVisualizer } from './cubeTunnelVisualizer.js';
-import { RadialWavesVisualizer } from './radialWavesVisualizer .js';
-import { CircularWavesVisualizer } from './circularWavesVisualizer.js';
-import { PsychedelicWaveVisualizer } from './psychedelicWaveVisualizer.js';
-import { CircuitBeatVisualizer } from './circuitBeatVisualizer.js';
-import { Wave3DVisualizer2 } from './wave3DVisualizer2.js';
-import { PsychedelicLineVisualizer } from './psychedelicLineVisualizer.js';
-import { MonolithicWaveVisualizer } from './monolithicWaveVisualizer .js';
-import { HorrorCircusVisualizer } from './horrorCircusVisualizer .js';
-import {HyperReactiveMusicalVisualizer} from    './hyperReactiveMusicalVisualizer.js'
+import { BarVisualizer } from './visualizers/barVisualizer.js';
+import { CircleVisualizer } from './visualizers/circleVisualizer.js';
+import { TunnelVisualizer } from './visualizers/tunnelVisualizer.js';
+import { InteractiveGalaxyVisualizer } from './visualizers/interactiveGalaxyVisualizer.js';
+import { PsychedelicCubesVisualizer } from './visualizers/psychedelicCubesVisualizer.js';
+import { BrutalistTetrahedronsVisualizer } from './visualizers/brutalistTetrahedronsVisualizer.js';
+import { Wave3DVisualizer } from './visualizers/wave3DVisualizer.js';
+import { CubeTunnelVisualizer } from './visualizers/cubeTunnelVisualizer.js';
+import { RadialWavesVisualizer } from './visualizers/radialWavesVisualizer .js';
+import { CircularWavesVisualizer } from './visualizers/circularWavesVisualizer.js';
+import { PsychedelicWaveVisualizer } from './visualizers/psychedelicWaveVisualizer.js';
+import { CircuitBeatVisualizer } from './visualizers/circuitBeatVisualizer.js';
+import { Wave3DVisualizer2 } from './visualizers/wave3DVisualizer2.js';
+import { PsychedelicLineVisualizer } from './visualizers/psychedelicLineVisualizer.js';
+import { MonolithicWaveVisualizer } from './visualizers/monolithicWaveVisualizer .js';
+import { HorrorCircusVisualizer } from './visualizers/horrorCircusVisualizer .js';
+import {HyperReactiveMusicalVisualizer} from    './visualizers/hyperReactiveMusicalVisualizer.js'
 export class GUIController {
     constructor(audioVisualizer) {
         this.audioVisualizer = audioVisualizer;

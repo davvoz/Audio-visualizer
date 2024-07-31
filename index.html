@@ -1,161 +1,61 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Visualizer 3D</title>
-    <style>
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2980b9;
-            --background-color: #1a1a1a;
-            --text-color: #ffffff;
-            --disabled-color: #555555;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        #container {
-            flex-grow: 1;
-            position: relative;
-        }
-
-        #controls {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-top: 1px solid var(--primary-color);
-        }
-
-        .control-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .btn {
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover:not(:disabled) {
-            background-color: var(--secondary-color);
-        }
-
-        .btn:disabled {
-            background-color: var(--disabled-color);
-            cursor: not-allowed;
-        }
-
-        #audioFileInput {
-            display: none;
-        }
-
-        .file-input-label {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .file-input-label:hover {
-            background-color: var(--secondary-color);
-        }
-
-        #trackInfo {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        #progressContainer {
-            width: 100%;
-            background-color: #444;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        #progressBar {
-            width: 0;
-            height: 100%;
-            background-color: var(--primary-color);
-            transition: width 0.1s linear;
-        }
-
-        #trackList {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 15px;
-            border: 1px solid #444;
-            border-radius: 5px;
-        }
-
-        .track {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #444;
-            transition: background-color 0.3s ease;
-        }
-
-        .track:last-child {
-            border-bottom: none;
-        }
-
-        .track.playing {
-            background-color: var(--secondary-color);
-        }
-
-        .track-name {
-            flex-grow: 1;
-            margin-right: 10px;
-        }
-
-        .track .btn {
-            padding: 5px 10px;
-            font-size: 0.9em;
-        }
-    </style>
+    <title>3D Audio Visualizer</title>
+    <!--import style.css-->
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div id="container"></div>
+    <div id="container">
+        <div id="welcome-message">
+            <h1>Welcome to the 3D Audio Visualizer! 🎵✨</h1>
+            <p>Get ready for an extraordinary musical experience! This isn't your usual boring audio player...</p>
+            <p>Imagine being able to <strong>see</strong> your music dancing and moving in 3D. Yes, you heard right:
+                your music will come to life before your eyes! 👀🕺</p>
+            <p>Here's what you can do:</p>
+            <ul>
+                <li>Upload your favorite audio tracks (the more you upload, the more fun we'll have!)</li>
+                <li>We can load more than one simultaneously</li>
+                <li>Press play and watch the magic happen on the screen</li>
+                <li>Experiment with the controls to customize your visual experience</li>
+            </ul>
+            <p>Are you ready to transform your ears into eyes? Upload your first track and let's start the show! 🎉🎧
+            </p>
+        </div>
+    </div>
     <div id="controls">
-        <div id="trackInfo">Nessuna traccia selezionata</div>
+        <div class="control-header">
+            <div id="trackInfo">No track selected</div>
+
+            <div class="btn-group">
+                <button id="headerPlayButton" class="btn">Play</button>
+                <div id="toggleControls">▼</div>
+            </div>
+        </div>
         <div id="progressContainer">
             <div id="progressBar"></div>
         </div>
         <div class="control-group">
-            <button id="previousButton" class="btn" disabled>Precedente</button>
-            <button id="playButton" class="btn">Play</button>
-            <button id="nextButton" class="btn" disabled>Successivo</button>
+            <div class="btn-group">
+                <button id="previousButton" class="btn" disabled>Previous</button>
+                <button id="playButton" class="btn">Play</button>
+                <button id="nextButton" class="btn" disabled>Next</button>
+            </div>
+            <div class="volume-control">
+                <label for="volume">Volume:</label>
+                <input type="range" id="volume" min="0.01" max="1" value="1" step="0.01" />
+            </div>
             <label for="audioFileInput" class="file-input-label">
-                Carica Audio
+                Upload Audio
                 <input type="file" id="audioFileInput" accept="audio/*" multiple>
             </label>
         </div>
-        <div id="trackList"></div>
+        <div id="trackListToggle">Show/Hide Tracklist</div>
+        <div id="trackList" class="collapsed"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/dat.gui/build/dat.gui.min.js"></script>
@@ -167,11 +67,203 @@
                 "three/examples/jsm/postprocessing/EffectComposer.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/EffectComposer.js",
                 "three/examples/jsm/postprocessing/RenderPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/RenderPass.js",
                 "three/examples/jsm/postprocessing/UnrealBloomPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/UnrealBloomPass.js",
-                "three/examples/jsm/postprocessing/ShaderPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/ShaderPass.js"
+                "three/examples/jsm/postprocessing/ShaderPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/ShaderPass.js",
+                "three/examples/jsm/postprocessing/GlitchPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/GlitchPass.js"
             }
         }
     </script>
     <script type="module" src="app.js"></script>
+    <script>
+        //come metto nella mappaimport { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';?
+        //"three/examples/jsm/controls/OrbitControls.js": "https://unpkg.com/three@0.150.1/examples/jsm/controls/OrbitControls.js",
+
+        //"three/examples/jsm/postprocessing/GlitchPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/GlitchPass.js",
+        let isPlaying = false;
+        let currentTrack = null;
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let audioSource = null;
+        /* quando appare headerPlayButton appare con un animazione di spostamento da sinistra a destra */
+
+        /* quando appare il pulsante di play scompare il pulsante di play del header */
+
+
+        document.getElementById('trackListToggle').addEventListener('click', function () {
+            document.getElementById('trackList').classList.toggle('collapsed');
+        });
+
+        document.getElementById('toggleControls').addEventListener('click', function () {
+            document.getElementById('controls').classList.toggle('collapsed');
+
+            updatePlayButtonText();
+        });
+
+        function showWelcomeMessage() {
+            const trackList = document.getElementById('trackList');
+            const welcomeMessage = document.getElementById('welcome-message');
+            if (trackList.children.length === 0) {
+                welcomeMessage.style.display = 'block';
+            } else {
+                welcomeMessage.style.display = 'none';
+            }
+        }
+
+        showWelcomeMessage();
+
+        const audioFileInput = document.getElementById('audioFileInput');
+        audioFileInput.addEventListener('change', function (event) {
+            if (event.target.files.length > 0) {
+                const trackList = document.getElementById('trackList');
+                Array.from(event.target.files).forEach((file, index) => {
+                    const track = document.createElement('div');
+                    track.className = 'track';
+                    track.innerHTML = `
+                        <div class="track-name">${file.name}</div>
+                        <button class="btn track-play-btn">Play</button>
+                    `;
+                    trackList.appendChild(track);
+
+                    const playButton = track.querySelector('.track-play-btn');
+                    playButton.addEventListener('click', function () {
+                        playTrack(file, track);
+                    });
+                });
+
+                document.getElementById('trackList').classList.remove('collapsed');
+                showWelcomeMessage();
+                updateControlButtons();
+            }
+        });
+
+        function playTrack(file, trackElement) {
+            if (currentTrack) {
+                currentTrack.classList.remove('playing');
+            }
+            currentTrack = trackElement;
+            currentTrack.classList.add('playing');
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const arrayBuffer = e.target.result;
+                audioContext.decodeAudioData(arrayBuffer, function (buffer) {
+                    if (audioSource) {
+                        audioSource.stop();
+                    }
+                    audioSource = audioContext.createBufferSource();
+                    audioSource.buffer = buffer;
+                    audioSource.connect(audioContext.destination);
+                    audioSource.start(0);
+                    isPlaying = true;
+                    updatePlayButtonText();
+                    updateTrackInfo(file.name);
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function updateControlButtons() {
+            const trackList = document.getElementById('trackList');
+            const previousButton = document.getElementById('previousButton');
+            const nextButton = document.getElementById('nextButton');
+
+            previousButton.disabled = !currentTrack || !currentTrack.previousElementSibling;
+            nextButton.disabled = !currentTrack || !currentTrack.nextElementSibling;
+        }
+
+        function updateTrackInfo(trackName) {
+            document.getElementById('trackInfo').textContent = trackName;
+        }
+
+        function updatePlayButtonText() {
+            const headerPlayButton = document.getElementById('headerPlayButton');
+            const controls = document.getElementById('controls');
+            headerPlayButton.style.animation = 'slideInRight 0.3s forwards';
+
+        }
+
+        function togglePlayPause() {
+            if (isPlaying) {
+                audioSource.stop();
+                isPlaying = false;
+            } else if (currentTrack) {
+                const file = audioFileInput.files[Array.from(document.getElementById('trackList').children).indexOf(currentTrack)];
+                playTrack(file, currentTrack);
+            }
+        }
+
+        document.getElementById('headerPlayButton').addEventListener('click', togglePlayPause);
+        document.getElementById('playButton').addEventListener('click', togglePlayPause);
+
+        document.getElementById('previousButton').addEventListener('click', function () {
+            if (currentTrack && currentTrack.previousElementSibling) {
+                const previousTrack = currentTrack.previousElementSibling;
+                const file = audioFileInput.files[Array.from(document.getElementById('trackList').children).indexOf(previousTrack)];
+                playTrack(file, previousTrack);
+                updateControlButtons();
+            }
+        });
+
+        document.getElementById('nextButton').addEventListener('click', function () {
+            if (currentTrack && currentTrack.nextElementSibling) {
+                const nextTrack = currentTrack.nextElementSibling;
+                const file = audioFileInput.files[Array.from(document.getElementById('trackList').children).indexOf(nextTrack)];
+                playTrack(file, nextTrack);
+                updateControlButtons();
+            }
+        });
+
+        // Update progress bar
+        setInterval(function () {
+            if (isPlaying && audioSource) {
+                const progress = (audioContext.currentTime - audioSource.startTime) / audioSource.buffer.duration;
+                document.getElementById('progressBar').style.width = `${progress * 100}%`;
+            }
+        }, 100);
+
+        // Handle click on progress bar
+        document.getElementById('progressContainer').addEventListener('click', function (e) {
+            if (isPlaying && audioSource) {
+                const clickPosition = e.offsetX / this.offsetWidth;
+                const newTime = clickPosition * audioSource.buffer.duration;
+                audioSource.stop();
+                audioSource = audioContext.createBufferSource();
+                audioSource.buffer = audioSource.buffer;
+                audioSource.connect(audioContext.destination);
+                audioSource.start(0, newTime);
+                audioSource.startTime = audioContext.currentTime - newTime;
+            }
+        });
+
+        // Function to update 3D visualization (to be implemented in app.js)
+        function updateVisualization(audioData) {
+            // Implement 3D visualization update logic here
+            // This function should be called periodically during playback
+        }
+
+        // Create an AnalyserNode to get real-time audio data
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 2048;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        // Connect the AnalyserNode
+        if (audioSource) {
+            audioSource.connect(analyser);
+            analyser.connect(audioContext.destination);
+        }
+
+
+        // Animation function to continuously update the visualization
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isPlaying) {
+                analyser.getByteFrequencyData(dataArray);
+                updateVisualization(dataArray);
+            }
+        }
+
+        animate();
+    </script>
 </body>
 
 </html>

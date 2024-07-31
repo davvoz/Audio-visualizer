@@ -65,7 +65,7 @@ export class PsychedelicLineVisualizer {
     }
 
     createParticleSystem() {
-        const particlesCount = 1000;
+        const particlesCount = 100;
         const particlesGeometry = new THREE.BufferGeometry();
         const posArray = new Float32Array(particlesCount * 3);
         const velocityArray = new Float32Array(particlesCount * 3);
@@ -84,7 +84,7 @@ export class PsychedelicLineVisualizer {
         particlesGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocityArray, 3));
 
         const particlesMaterial = new THREE.PointsMaterial({
-            size: 3,
+            size: 1,
             color: 0xffffff,
             transparent: true,
             blending: THREE.AdditiveBlending,
@@ -96,21 +96,23 @@ export class PsychedelicLineVisualizer {
     }
 
     update(dataArray) {
+        
         const time = this.clock.getElapsedTime();
-        const positions = this.particleSystem.geometry.attributes.position.array;
-        const velocities = this.particleSystem.geometry.attributes.velocity.array;
+        const particleSystem = this.particleSystem.geometry.attributes.position.array;
+        const particleVelocity = this.particleSystem.geometry.attributes.velocity.array;
+        const particlesMaterial = this.particleSystem.material;
 
-        // Update particles
-        for (let i = 0; i < positions.length; i += 3) {
-            positions[i] += velocities[i];
-            positions[i + 1] += velocities[i + 1];
-            positions[i + 2] += velocities[i + 2];
+        const audio = dataArray[0] / 255;
+        particlesMaterial.color.setHSL(audio, 1, 0.5);
+        particlesMaterial.size = audio * 10;
 
-            // Reset particle position if it goes too far
-            if (Math.abs(positions[i]) > 400 || Math.abs(positions[i + 1]) > 200 || Math.abs(positions[i + 2]) > 400) {
-                positions[i] = (Math.random() - 0.5) * 400;
-                positions[i + 1] = Math.random() * 200 - 100;
-                positions[i + 2] = (Math.random() - 0.5) * 400;
+        for (let i = 0; i < particleSystem.length; i += 3) {
+            particleSystem[i] += particleVelocity[i];
+            particleSystem[i + 1] += particleVelocity[i + 1];
+            particleSystem[i + 2] += particleVelocity[i + 2];
+
+            if (particleSystem[i + 1] < -100) {
+                particleSystem[i + 1] = 100;
             }
         }
 
@@ -120,7 +122,6 @@ export class PsychedelicLineVisualizer {
         this.waveMeshes.forEach((ring, index) => {
             const audioIndex = index % dataArray.length;
             const audioValue = dataArray[audioIndex] / 255;
-
             ring.scale.setScalar(1 + audioValue);
             ring.rotation.z += Math.sin(time * 0.5 + index) * 0.01;
         });

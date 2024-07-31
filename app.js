@@ -17,10 +17,18 @@ class AudioPlayer {
     initializeEventListeners() {
         document.getElementById('audioFileInput').addEventListener('change', this.handleFileInput.bind(this));
         document.getElementById('playButton').addEventListener('click', this.togglePlayPause.bind(this));
+        document.getElementById('headerPlayButton').addEventListener('click', this.togglePlayPause.bind(this));
         document.getElementById('nextButton').addEventListener('click', this.playNext.bind(this));
         document.getElementById('previousButton').addEventListener('click', this.playPrevious.bind(this));
         document.getElementById('trackList').addEventListener('click', this.handleTrackListClick.bind(this));
         document.getElementById('progressContainer').addEventListener('click', this.seekAudio.bind(this));
+        document.getElementById('volume').addEventListener('input', this.setVolume.bind(this));
+    }
+
+    setVolume(event) {
+        if (this.audio) {
+            this.audio.volume = event.target.value;
+        }
     }
 
     createTrackElement(file, index) {
@@ -28,8 +36,10 @@ class AudioPlayer {
         trackElement.className = 'track';
         trackElement.innerHTML = `
                     <span class="track-name">${file.name}</span>
-                    <button class="btn play-track" data-index="${index}">Play</button>
-                    <button class="btn remove-track" data-index="${index}">Remove</button>
+                    <div class="btn-group">
+                        <button class="btn play-track" data-index="${index}">Play</button>
+                        <button class="btn remove-track" data-index="${index}">Remove</button>
+                    </div>
                 `;
         return trackElement;
     }
@@ -45,6 +55,7 @@ class AudioPlayer {
             trackList.appendChild(trackElement);
         });
         this.updateButtonStates();
+        //se la tracklist è vuota, mostra il messaggio di b
     }
 
     handleFileInput(event) {
@@ -77,6 +88,7 @@ class AudioPlayer {
             this.audioContext.resume();
             this.isPlaying = true;
             document.getElementById('playButton').textContent = 'Pause';
+            document.getElementById('headerPlayButton').textContent = 'Pause';
         }
     }
 
@@ -86,6 +98,7 @@ class AudioPlayer {
             this.audioContext.suspend();
             this.isPlaying = false;
             document.getElementById('playButton').textContent = 'Play';
+            document.getElementById('headerPlayButton').textContent = 'Play';
         }
     }
 
@@ -136,6 +149,8 @@ class AudioPlayer {
 
             this.source = this.audioContext.createMediaElementSource(this.audio);
             this.visualizer.setParam(this.audioContext, this.source);
+            //aggiustare il volume
+            this.audio.volume = document.getElementById('volume').value;
 
             if (!this.guiController) {
                 this.guiController = new GUIController(this.visualizer);
@@ -151,8 +166,20 @@ class AudioPlayer {
         } else {
             this.isPlaying = false;
             document.getElementById('playButton').textContent = 'Play';
+            document.getElementById('headerPlayButton').textContent = 'Play';
         }
-
+        //posizionamo la tracklist con la scrollbar in base alla traccia corrente
+        const altezzaRiga = //recupero l'altezza di una riga
+            document.querySelector('.track').offsetHeight;
+        const posizione = //calcolo la posizione della track corrente
+            this.currentAudioIndex * altezzaRiga;
+        
+            //andiamoci con un animazione
+        document.getElementById('trackList').scrollTo({
+            top: posizione,
+            behavior: 'smooth'
+        });
+    
         this.updateButtonStates();
     }
 

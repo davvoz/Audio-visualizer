@@ -13,8 +13,13 @@ import { CircuitBeatVisualizer } from './visualizers/circuitBeatVisualizer.js';
 import { Wave3DVisualizer2 } from './visualizers/wave3DVisualizer2.js';
 import { PsychedelicLineVisualizer } from './visualizers/psychedelicLineVisualizer.js';
 import { MonolithicWaveVisualizer } from './visualizers/monolithicWaveVisualizer .js';
-import { HorrorCircusVisualizer } from './visualizers/horrorCircusVisualizer .js';
-import {HyperReactiveMusicalVisualizer} from    './visualizers/hyperReactiveMusicalVisualizer.js'
+import { HorrorCircusVisualizer } from './visualizers/horrorCircusVisualizer.js';
+import { HyperReactiveMusicalVisualizer } from './visualizers/hyperReactiveMusicalVisualizer.js'
+import { NewWaveVisualizer } from './visualizers/newWaveVisualizer.js'
+import { PsychedelicDreamVisualizer } from './visualizers/psychedelicDreamVisualizer.js';
+import { NeonCityVisualizer } from './visualizers/neonCityVisualizer.js';
+//visualizers\matrixCodeVisualizer.js
+import { MatrixCodeVisualizer } from './visualizers/matrixCodeVisualizer.js';
 export class GUIController {
     constructor(audioVisualizer) {
         this.audioVisualizer = audioVisualizer;
@@ -26,24 +31,28 @@ export class GUIController {
     }
 
     init() {
-        const visualizers = {         
+        const visualizers = {
             Bars: BarVisualizer,
             Circles: CircleVisualizer,
             Tunnel: TunnelVisualizer,
             InteractiveGalaxy: InteractiveGalaxyVisualizer,
             PsychedelicCubes: PsychedelicCubesVisualizer,
-            BrutalistTetrahedrons : BrutalistTetrahedronsVisualizer,
-            Wave3D : Wave3DVisualizer,
-            CubeTunnel : CubeTunnelVisualizer,
-            RadialWaves : RadialWavesVisualizer,
-            CircularWaves : CircularWavesVisualizer,
-            PsychedelicWave : PsychedelicWaveVisualizer,
-            CircuitBeat : CircuitBeatVisualizer,
-            Wave3D2 : Wave3DVisualizer2,
-            PsychedelicLine : PsychedelicLineVisualizer,
-            MonolithicWave : MonolithicWaveVisualizer,
-            HorrorCircus : HorrorCircusVisualizer,
-            HyperReactiveMusical : HyperReactiveMusicalVisualizer
+            BrutalistTetrahedrons: BrutalistTetrahedronsVisualizer,
+            Wave3D: Wave3DVisualizer,
+            CubeTunnel: CubeTunnelVisualizer,
+            RadialWaves: RadialWavesVisualizer,
+            CircularWaves: CircularWavesVisualizer,
+            PsychedelicWave: PsychedelicWaveVisualizer,
+            CircuitBeat: CircuitBeatVisualizer,
+            Wave3D2: Wave3DVisualizer2,
+            PsychedelicLine: PsychedelicLineVisualizer,
+            MonolithicWave: MonolithicWaveVisualizer,
+            HorrorCircus: HorrorCircusVisualizer,
+            HyperReactiveMusical: HyperReactiveMusicalVisualizer,
+            NewWave: NewWaveVisualizer,
+            PsychedelicDream: PsychedelicDreamVisualizer,
+            NeonCity: NeonCityVisualizer,
+            MatrixCode: MatrixCodeVisualizer,
         };
 
         this.gui.add(this.controls, 'visualization', Object.keys(visualizers)).onChange((value) => {

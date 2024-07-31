@@ -126,7 +126,7 @@ export class Wave3DVisualizer2 {
         this.mesh.rotation.y += this.controls.rotationSpeedY;
         this.mesh.rotation.x += this.controls.rotationSpeedX;
         this.mesh.rotation.z += this.controls.rotationSpeedZ;
-        
+
         this.camera.position.z += this.controls.zoom;
         this.camera.position.x += this.controls.moveX;
         this.camera.position.y += this.controls.moveY;

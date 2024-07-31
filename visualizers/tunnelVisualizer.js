@@ -14,14 +14,21 @@ export class TunnelVisualizer {
         this.time = 0;
         this.tunnelRadius = 5;
         this.tunnelLength = 500;
-        this.tunnelSegments = 64; // Aumentato per una maggiore definizione
-        this.ringSegments = 32; // Aumentato per una maggiore definizione
+        this.tunnelSegments = 64;
+        this.ringSegments = 32;
         this.rings = [];
-        this.solids = [];
         this.cameraOffset = new THREE.Vector3();
         this.cameraTarget = new THREE.Vector3();
         this.cameraLerpFactor = 0.05;
         this.maxCameraOffset = 1.5;
+
+        // Nuove variabili per il controllo della velocità
+        this.baseSpeed = 0.2;
+        this.maxSpeedMultiplier = 3;
+        this.speedLerpFactor = 0.05;
+        this.currentSpeed = 0;
+        this.noMusicThreshold = 5; // Soglia per determinare se c'è musica
+
         this.init();
     }
 
@@ -32,8 +39,8 @@ export class TunnelVisualizer {
                 time: { value: 0 },
                 color1: { value: new THREE.Color(0x00ffff) },
                 color2: { value: new THREE.Color(0xff00ff) },
-                color3: { value: new THREE.Color(0xffff00) }, // Aggiunto un terzo colore per maggiore psichedelia
-                audioData: { value: new Float32Array(128) }, // Nuovo uniform per i dati audio
+                color3: { value: new THREE.Color(0xffff00) },
+                audioData: { value: new Float32Array(128) },
             },
             vertexShader: `
                 varying vec2 vUv;
@@ -44,11 +51,15 @@ export class TunnelVisualizer {
                     vUv = uv;
                     vec3 pos = position;
                     
-                    // Deforma il tunnel in base ai dati audio
                     float audioInfluence = audioData[int(uv.y * 128.0)] * 0.2;
                     pos.x += sin(pos.z * 0.1 + time) * audioInfluence;
                     pos.y += cos(pos.z * 0.1 + time) * audioInfluence;
                     
+                    // Aggiungere la curva
+                    float curveFactor = 0.005;
+                    pos.x += sin(pos.z * curveFactor + time) * 5.0;
+                    pos.y += cos(pos.z * curveFactor + time) * 5.0;
+
                     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
                     gl_Position = projectionMatrix * mvPosition;
                 }
@@ -81,7 +92,6 @@ export class TunnelVisualizer {
         this.scene.add(this.tunnel);
 
         this.createRings();
-        this.createSolids();
 
         const ambientLight = new THREE.AmbientLight(0x404040);
         this.scene.add(ambientLight);
@@ -89,12 +99,14 @@ export class TunnelVisualizer {
         const pointLight = new THREE.PointLight(0xffffff, 1, 1000);
         pointLight.position.set(0, 0, 10);
         pointLight.castShadow = true;
-        pointLight.shadow.mapSize.width = 2048; // Aumentata la risoluzione delle ombre
+        pointLight.shadow.mapSize.width = 2048;
         pointLight.shadow.mapSize.height = 2048;
         this.scene.add(pointLight);
+
         this.cameraGroup = new THREE.Group();
         this.cameraGroup.add(this.camera);
         this.scene.add(this.cameraGroup);
+
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
     }
 
@@ -107,43 +119,12 @@ export class TunnelVisualizer {
             emissiveIntensity: 0.5,
         });
 
-        for (let i = 0; i < 50; i++) { // Aumentato il numero di anelli
+        for (let i = 0; i < 50; i++) {
             const ring = new THREE.Mesh(ringGeometry, ringMaterial);
             ring.position.z = -i * (this.tunnelLength / 50);
-            ring.rotation.x = Math.PI / 2;
-            ring.rotation.y = Math.random() * Math.PI;
-            ring.rotation.z = Math.random() * Math.PI;
+            ring.rotation.x = Math.PI / 3;
             this.rings.push(ring);
             this.scene.add(ring);
-        }
-    }
-
-    createSolids() {
-        const solidTypes = [
-            { geometry: new THREE.SphereGeometry(0.5, 32, 32), color: 0xff0000 },
-            { geometry: new THREE.BoxGeometry(0.5, 0.5, 0.5), color: 0x00ff00 },
-            { geometry: new THREE.TetrahedronGeometry(0.5), color: 0x0000ff },
-            { geometry: new THREE.OctahedronGeometry(0.5), color: 0xffff00 },
-            { geometry: new THREE.DodecahedronGeometry(0.5), color: 0xff00ff }
-        ];
-
-        for (let i = 0; i < 50; i++) { // Aumentato il numero di solidi
-            const type = solidTypes[i % solidTypes.length];
-            const material = new THREE.MeshPhongMaterial({ 
-                color: type.color,
-                emissive: type.color,
-                emissiveIntensity: 0.5,
-                shininess: 100
-            });
-            const solid = new THREE.Mesh(type.geometry, material);
-            solid.position.set(
-                (Math.random() - 0.5) * this.tunnelRadius * 2,
-                (Math.random() - 0.5) * this.tunnelRadius * 2,
-                -i * (this.tunnelLength / 50)
-            );
-            solid.castShadow = true;
-            this.solids.push(solid);
-            this.scene.add(solid);
         }
     }
 
@@ -152,88 +133,79 @@ export class TunnelVisualizer {
 
         this.updateCameraPosition(dataArray);
 
-        // Aggiorniamo i valori uniformi del materiale shader
         this.tunnel.material.uniforms.time.value = this.time;
         this.tunnel.material.uniforms.audioData.value = dataArray;
 
-        this.cameraGroup.position.z -= 0.5;
-        if (this.cameraGroup.position.z < -this.tunnelLength) {
-            this.cameraGroup.position.z = 0;
-        }
+        // Calcola l'energia totale del segnale audio
+        const totalEnergy = dataArray.reduce((sum, value) => sum + value, 0);
         
-        // Movimento della telecamera
-        this.camera.position.z -= 0.5;
-        if (this.camera.position.z < -this.tunnelLength) {
-            this.camera.position.z = 0;
+        // Determina se c'è musica basandosi sull'energia totale
+        const isThereMusic = totalEnergy > this.noMusicThreshold;
+
+        if (isThereMusic) {
+            const bassIntensity = dataArray[0] / 255;
+            const targetSpeed = this.baseSpeed + bassIntensity * (this.maxSpeedMultiplier - 1) * this.baseSpeed;
+            this.currentSpeed += (targetSpeed - this.currentSpeed) * this.speedLerpFactor;
+        } else {
+            // Se non c'è musica, rallenta gradualmente fino a fermarsi
+            this.currentSpeed *= 0.95; // Fattore di decelerazione
+            if (this.currentSpeed < 0.001) this.currentSpeed = 0;
         }
 
-        // Aggiorniamo gli anelli
+        // Muovi il gruppo della telecamera solo se c'è velocità
+        if (this.currentSpeed > 0) {
+            this.cameraGroup.position.z -= this.currentSpeed;
+            if (this.cameraGroup.position.z < -this.tunnelLength) {
+                this.cameraGroup.position.z = 0;
+            }
+        }
+
+        // Aggiorna gli anelli
         this.rings.forEach((ring, index) => {
             const dataIndex = Math.floor(index / this.rings.length * dataArray.length);
-            const scale = 1 + dataArray[dataIndex] / 255 * 0.5;
+            const scale = 1 + dataArray[dataIndex] / 255 * 0.3;
             ring.scale.set(scale, scale, 1);
             
-            ring.position.z += 0.5;
-            if (ring.position.z > this.camera.position.z) {
-                ring.position.z -= this.tunnelLength;
+            // Muovi gli anelli solo se c'è velocità
+            if (this.currentSpeed > 0) {
+                ring.position.z += this.currentSpeed;
+                if (ring.position.z > this.camera.position.z) {
+                    ring.position.z -= this.tunnelLength;
+                }
             }
             
-            ring.rotation.z += 1 * (dataArray[dataIndex] / 255);
+            // Continua a far ruotare gli anelli anche senza musica, ma più lentamente
+            const rotationSpeed = isThereMusic ? 0.5 * (dataArray[dataIndex] / 255) : 0.1;
+            ring.rotation.z += rotationSpeed;
             
-            const hue = (this.time * 0.1 + dataArray[dataIndex] / 255) % 1;
+            // Cambia il colore degli anelli in base al tempo e ai dati audio
+            const hue = (this.time * 0.05 + (isThereMusic ? dataArray[dataIndex] / 255 : 0)) % 1;
             ring.material.color.setHSL(hue, 1, 0.5);
             ring.material.emissive.setHSL(hue, 1, 0.5);
-        });
-
-        // Aggiorniamo i solidi
-        this.solids.forEach((solid, index) => {
-            const dataIndex = Math.floor(index / this.solids.length * dataArray.length);
-            const scale = 1 + dataArray[dataIndex] / 255;
-            solid.scale.set(scale, scale, scale);
-            
-            solid.position.z += 0.5;
-            if (solid.position.z > this.camera.position.z) {
-                solid.position.z -= this.tunnelLength;
-                solid.position.x = (Math.random() - 0.5) * this.tunnelRadius * 2;
-                solid.position.y = (Math.random() - 0.5) * this.tunnelRadius * 2;
-            }
-            
-            solid.rotation.x += 0.02 * (dataArray[dataIndex] / 255);
-            solid.rotation.y += 0.02 * (dataArray[dataIndex] / 255);
-            
-            const hue = (this.time * 0.1 + dataArray[dataIndex] / 255) % 1;
-            solid.material.color.setHSL(hue, 1, 0.5);
-            solid.material.emissive.setHSL(hue, 1, 0.5);
         });
 
         this.renderer.render(this.scene, this.camera);
     }
 
     updateCameraPosition(dataArray) {
-        // Calcoliamo la media dei dati audio per le frequenze basse, medie e alte
         const lowFreq = this.getAverageFrequency(dataArray, 0, 10);
         const midFreq = this.getAverageFrequency(dataArray, 11, 100);
         const highFreq = this.getAverageFrequency(dataArray, 101, 127);
 
-        // Usiamo le frequenze per influenzare il movimento della telecamera
-        this.cameraTarget.x = (lowFreq - 128) / 255 * this.maxCameraOffset;
-        this.cameraTarget.y = (midFreq - 128) / 255 * this.maxCameraOffset;
+        this.cameraTarget.x = (lowFreq - 128) / 255 * this.maxCameraOffset * 0.5;
+        this.cameraTarget.y = (midFreq - 128) / 255 * this.maxCameraOffset * 0.5;
         
-        // Aggiungiamo un leggero movimento circolare basato sulle alte frequenze
-        const angle = this.time * 2 + highFreq * 0.05;
-        this.cameraTarget.x += Math.sin(angle) * 0.5;
-        this.cameraTarget.y += Math.cos(angle) * 0.5;
+        const angle = this.time + highFreq * 0.02;
+        this.cameraTarget.x += Math.sin(angle) * 0.3;
+        this.cameraTarget.y += Math.cos(angle) * 0.3;
 
-        // Applichiamo un'interpolazione lineare per un movimento più fluido
-        this.cameraOffset.lerp(this.cameraTarget, this.cameraLerpFactor);
+        this.cameraOffset.lerp(this.cameraTarget, this.cameraLerpFactor * 0.5);
 
-        // Aggiorniamo la posizione del gruppo della telecamera
         this.cameraGroup.position.x = this.cameraOffset.x;
         this.cameraGroup.position.y = this.cameraOffset.y;
 
-        // Aggiungiamo una leggera rotazione alla telecamera basata sul movimento
-        this.camera.rotation.z = -this.cameraOffset.x * 0.1;
-        this.camera.rotation.x = -this.cameraOffset.y * 0.1;
+        this.camera.rotation.z = -this.cameraOffset.x * 0.05;
+        this.camera.rotation.x = -this.cameraOffset.y * 0.05;
     }
 
     getAverageFrequency(dataArray, start, end) {
@@ -261,12 +233,6 @@ export class TunnelVisualizer {
             this.scene.remove(ring);
             ring.geometry.dispose();
             ring.material.dispose();
-        });
-
-        this.solids.forEach(solid => {
-            this.scene.remove(solid);
-            solid.geometry.dispose();
-            solid.material.dispose();
         });
 
         this.renderer.dispose();

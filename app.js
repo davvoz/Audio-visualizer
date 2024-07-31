@@ -128,7 +128,6 @@ class AudioPlayer {
         if (this.audio) {
             this.audio.pause();
         }
-
         if (this.currentAudioIndex >= 0 && this.currentAudioIndex < this.audioQueue.length) {
             const file = this.audioQueue[this.currentAudioIndex];
             this.audio = new Audio(URL.createObjectURL(file));

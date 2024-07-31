@@ -11,7 +11,10 @@ import { CircularWavesVisualizer } from './circularWavesVisualizer.js';
 import { PsychedelicWaveVisualizer } from './psychedelicWaveVisualizer.js';
 import { CircuitBeatVisualizer } from './circuitBeatVisualizer.js';
 import { Wave3DVisualizer2 } from './wave3DVisualizer2.js';
-
+import { PsychedelicLineVisualizer } from './psychedelicLineVisualizer.js';
+import { MonolithicWaveVisualizer } from './monolithicWaveVisualizer .js';
+import { HorrorCircusVisualizer } from './horrorCircusVisualizer .js';
+import {HyperReactiveMusicalVisualizer} from    './hyperReactiveMusicalVisualizer.js'
 export class GUIController {
     constructor(audioVisualizer) {
         this.audioVisualizer = audioVisualizer;
@@ -36,7 +39,11 @@ export class GUIController {
             CircularWaves : CircularWavesVisualizer,
             PsychedelicWave : PsychedelicWaveVisualizer,
             CircuitBeat : CircuitBeatVisualizer,
-            Wave3D2 : Wave3DVisualizer2
+            Wave3D2 : Wave3DVisualizer2,
+            PsychedelicLine : PsychedelicLineVisualizer,
+            MonolithicWave : MonolithicWaveVisualizer,
+            HorrorCircus : HorrorCircusVisualizer,
+            HyperReactiveMusical : HyperReactiveMusicalVisualizer
         };
 
         this.gui.add(this.controls, 'visualization', Object.keys(visualizers)).onChange((value) => {

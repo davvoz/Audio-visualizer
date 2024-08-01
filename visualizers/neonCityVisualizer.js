@@ -212,7 +212,7 @@ export class NeonCityVisualizer {
 
         // Update post-processing effects
         this.bloomPass.strength = 1 + bassValue;
-        this.glitchPass.goWild = bassValue > 0.8;
+        this.glitchPass.goWild = bassValue > 1;
         this.chromaticAberrationPass.uniforms.power.value = bassValue * 0.01;
 
         this.composer.render();

@@ -14,13 +14,12 @@ export class BarVisualizer {
         this.sphere = null;
         this.params = {
             resolution: 64,
-            radius: 40,
+            radius: 10,
             wireframe: true,
             emissiveIntensity: 0.5,
             bassIntensity: 1.5,
             trebleIntensity: 1.0,
-            rotationSpeed: 0.001,
-            colorScheme: 'rainbow',
+            rotationSpeed: 0.001
         };
 
         this.gui = new dat.GUI();
@@ -38,7 +37,6 @@ export class BarVisualizer {
         this.gui.add(this.params, 'bassIntensity', 0.5, 3);
         this.gui.add(this.params, 'trebleIntensity', 0.5, 3);
         this.gui.add(this.params, 'rotationSpeed', 0, 0.05);
-        this.gui.add(this.params, 'colorScheme', ['rainbow', 'heatmap', 'electric', 'pastel']);
     }
 
     init() {
@@ -90,19 +88,6 @@ export class BarVisualizer {
         }
     }
 
-    getColor(t) {
-        switch (this.params.colorScheme) {
-            case 'rainbow':
-                return t;
-            case 'heatmap':
-                return 0.6 - t * 0.6;
-            case 'electric':
-                return 0.6 + t * 0.2;
-            case 'pastel':
-                return 0.75 + t * 0.1;
-        }
-    }
-
     update(dataArray) {
         const time = this.clock.getElapsedTime();
         const bassValue = dataArray.slice(0, 4).reduce((a, b) => a + b) / 4 / 255;
@@ -128,7 +113,6 @@ export class BarVisualizer {
             this.sphere.geometry.computeVertexNormals();
         }
 
-        this.sphere.material.emissive.setHSL(this.getColor(bassValue), 1, trebleValue * 0.5);
         this.sphere.rotation.y += this.params.rotationSpeed;
 
         this.renderer.render(this.scene, this.camera);

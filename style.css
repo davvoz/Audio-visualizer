@@ -341,3 +341,10 @@ ul {
 .hidden {
     display: none;
 }
+
+/*per mobile rendi responsive welcome-message*/
+@media (max-width: 768px) {
+    #welcome-message {
+        width: 90%;
+    }
+}

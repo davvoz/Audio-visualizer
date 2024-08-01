@@ -25,7 +25,7 @@ export class GUIController {
         this.audioVisualizer = audioVisualizer;
         this.gui = new dat.GUI();
         this.controls = {
-            visualization: 'Bars'
+            visualization: 'Circles'
         };
         this.container = document.getElementById('container');
     }

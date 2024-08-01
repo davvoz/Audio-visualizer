@@ -32,7 +32,6 @@ export class GUIController {
 
     init() {
         const visualizers = {
-            Bars: BarVisualizer,
             Circles: CircleVisualizer,
             Tunnel: TunnelVisualizer,
             InteractiveGalaxy: InteractiveGalaxyVisualizer,
@@ -52,6 +51,7 @@ export class GUIController {
             NewWave: NewWaveVisualizer,
             PsychedelicDream: PsychedelicDreamVisualizer,
             NeonCity: NeonCityVisualizer,
+            Bars: BarVisualizer,
             MatrixCode: MatrixCodeVisualizer,
         };
 

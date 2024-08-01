@@ -10,6 +10,26 @@
 </head>
 
 <body>
+    <div id="loading" class="loading">
+        <div class="spinner-container">
+            <svg class="spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#3498db" />
+                        <stop offset="100%" stop-color="#9b59b6" />
+                    </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="40" stroke="url(#gradient)" stroke-width="8" fill="none" stroke-linecap="round">
+                    <animate attributeName="stroke-dasharray" from="0 251.2" to="251.2 0" dur="2s" repeatCount="indefinite" />
+                    <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="2s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="50" cy="50" r="20" fill="url(#gradient)">
+                    <animate attributeName="r" values="20;25;20" dur="1s" repeatCount="indefinite" />
+                </circle>
+            </svg>
+            <div class="loading-text">Loading...</div>
+        </div>
+    </div>
     <div id="container">
         <div id="welcome-message">
             <h1>Welcome to the 3D Audio Visualizer! 🎵✨</h1>
@@ -49,10 +69,17 @@
                 <label for="volume">Volume:</label>
                 <input type="range" id="volume" min="0.01" max="1" value="1" step="0.01" />
             </div>
-            <label for="audioFileInput" class="file-input-label">
-                Upload Audio
-                <input type="file" id="audioFileInput" accept="audio/*" multiple>
-            </label>
+            <div class="btn-group">
+                <label for="audioFileInput" class="file-input-label">
+                    Upload Audio
+                    <input type="file" id="audioFileInput" accept="audio/*" multiple>
+                </label>
+                OR
+                <button id="listenPlaylist" class="btn">
+                     Default playlist
+                    <img src="assets/logo.png" alt="logo icon" class="logo-icon" />
+                </button>
+            </div>
         </div>
         <div id="trackListToggle">Show/Hide Tracklist</div>
         <div id="trackList" class="collapsed"></div>
@@ -74,18 +101,12 @@
     </script>
     <script type="module" src="app.js"></script>
     <script>
-        //come metto nella mappaimport { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';?
-        //"three/examples/jsm/controls/OrbitControls.js": "https://unpkg.com/three@0.150.1/examples/jsm/controls/OrbitControls.js",
-
-        //"three/examples/jsm/postprocessing/GlitchPass.js": "https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/GlitchPass.js",
+        //nascondi lo spinner
+        document.getElementById('loading').classList.add('hidden');
         let isPlaying = false;
         let currentTrack = null;
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         let audioSource = null;
-        /* quando appare headerPlayButton appare con un animazione di spostamento da sinistra a destra */
-
-        /* quando appare il pulsante di play scompare il pulsante di play del header */
-
 
         document.getElementById('trackListToggle').addEventListener('click', function () {
             document.getElementById('trackList').classList.toggle('collapsed');
@@ -95,6 +116,60 @@
             document.getElementById('controls').classList.toggle('collapsed');
 
             updatePlayButtonText();
+        });
+
+        document.getElementById('listenPlaylist').addEventListener('click', function () {
+            const lucioGiolliTracks = [
+                { name: 'Arabian nights', url: './assets/arabian_night.mp3' },
+                { name: 'BB choir felio gbb o gh5g (1)', url: './assets/bb choir felio gbb o gh5g (1).mp3' },
+                { name: 'BB choir felio gbb o gh5g', url: './assets/bb choir felio gbb o gh5g.mp3' },
+                { name: 'Bloody mind', url: './assets/bloody_mind.mp3' },
+                { name: 'Btgty choir felio Ssing o gh5g', url: './assets/btgty choir felio Ssing o gh5g.mp3' },
+                { name: 'Calm and war', url: './assets/calm_and_war.mp3' },
+                { name: 'Choir felio Ssing Nights rg bgg sitaro gh5g (1)', url: './assets/choir felio Ssing Nights rg bgg sitaro gh5g (1).mp3' },
+                { name: 'Dark tzigane', url: './assets/dark_tzigane.mp3' },
+                { name: 'Death waltzer', url: './assets/death_waltzer.mp3' },
+                { name: 'Die happy', url: './assets/die_happy.mp3' },
+                { name: 'Distorted child', url: './assets/distorted_child.mp3' },
+                { name: 'Drum and grezzo', url: './assets/drum_and_grezzo.mp3' },
+                { name: 'Elctronic disease', url: './assets/elctronic_disease.mp3' },
+                { name: 'Electronic cello', url: './assets/electronic_cello.mp3' },
+                { name: 'Epic tune', url: './assets/epic_tune.mp3' },
+                { name: 'Gitan', url: './assets/gitan.mp3' },
+                { name: 'Indian night', url: './assets/indian_night.mp3' },
+                { name: 'Industrial dream', url: './assets/industrial_dream.mp3' },
+                { name: 'Industrial drum', url: './assets/industrial_drum.mp3' },
+                { name: 'Lolbgf choir felio Ssing o gh5g (1)', url: './assets/lolbgf choir felio Ssing o gh5g (1).mp3' },
+                { name: 'Lolbgf choir felio Ssing o gh5g (2)', url: './assets/lolbgf choir felio Ssing o gh5g (2).mp3' },
+                { name: 'Lolbgf choir felio Ssing o gh5g', url: './assets/lolbgf choir felio Ssing o gh5g.mp3' },
+                { name: 'Mechanical nightmare', url: './assets/mechanical_nightmare.mp3' },
+                { name: 'Mechanica nightmare melodic', url: './assets/mechanica_nightmare_melodic.mp3' },
+                { name: 'Monk ballad', url: './assets/monk_ballad.mp3' },
+                { name: 'Neoclassical dreams', url: './assets/neoclassical_dreams.mp4' },
+                { name: 'Non volevo diventare una bambola stupida e inutile', url: './assets/non_volevo_diventare_una_bambola_stupida e inutile.mp3' },
+                { name: 'Raw monk', url: './assets/raw_monk.mp3' },
+                { name: 'Siete bruciat dannati', url: './assets/siete_bruciat_dannati.mp3' },
+                { name: 'Suspended in the void', url: './assets/suspended in the void.mp3' },
+                { name: 'Tribal circuits', url: './assets/tribal_circuits.mp3' },
+                { name: 'Vo vale fede (1)', url: './assets/Vo vale fede (1).mp3' },
+                { name: 'Vo vale fede', url: './assets/Vo vale fede.mp3' },
+                { name: 'VPROVao vale fede (1)', url: './assets/VPROVao vale fede (1).mp3' },
+                { name: 'VPROVao vale fede (3)', url: './assets/VPROVao vale fede (3).mp3' },
+                { name: 'VPROVao vale fede (4)', url: './assets/VPROVao vale fede (4).mp3' },
+                { name: 'VPROVao vale fede', url: './assets/VPROVao vale fede.mp3' }
+            ];
+
+            const trackList = document.getElementById('trackList');
+            lucioGiolliTracks.forEach((track, index) => {
+                const trackElement = document.createElement('div');
+                trackElement.className = 'track';
+                trackElement.innerHTML = `
+                    <div class="track-name">${track.name}</div>
+                    <button class="btn track-play-btn">Play</button>
+                `;
+                trackList.appendChild(trackElement);
+
+            });
         });
 
         function showWelcomeMessage() {
@@ -108,7 +183,7 @@
         }
 
         showWelcomeMessage();
-
+        //se non lo metto non si chiude la finestra di welcome
         const audioFileInput = document.getElementById('audioFileInput');
         audioFileInput.addEventListener('change', function (event) {
             if (event.target.files.length > 0) {
@@ -122,43 +197,13 @@
                     `;
                     trackList.appendChild(track);
 
-                    const playButton = track.querySelector('.track-play-btn');
-                    playButton.addEventListener('click', function () {
-                        playTrack(file, track);
-                    });
                 });
 
-                document.getElementById('trackList').classList.remove('collapsed');
+                document.getElementById('trackList').classList.toggle('collapsed');
                 showWelcomeMessage();
                 updateControlButtons();
             }
         });
-
-        function playTrack(file, trackElement) {
-            if (currentTrack) {
-                currentTrack.classList.remove('playing');
-            }
-            currentTrack = trackElement;
-            currentTrack.classList.add('playing');
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const arrayBuffer = e.target.result;
-                audioContext.decodeAudioData(arrayBuffer, function (buffer) {
-                    if (audioSource) {
-                        audioSource.stop();
-                    }
-                    audioSource = audioContext.createBufferSource();
-                    audioSource.buffer = buffer;
-                    audioSource.connect(audioContext.destination);
-                    audioSource.start(0);
-                    isPlaying = true;
-                    updatePlayButtonText();
-                    updateTrackInfo(file.name);
-                });
-            };
-            reader.readAsArrayBuffer(file);
-        }
 
         function updateControlButtons() {
             const trackList = document.getElementById('trackList');
@@ -179,37 +224,6 @@
             headerPlayButton.style.animation = 'slideInRight 0.3s forwards';
 
         }
-
-        function togglePlayPause() {
-            if (isPlaying) {
-                audioSource.stop();
-                isPlaying = false;
-            } else if (currentTrack) {
-                const file = audioFileInput.files[Array.from(document.getElementById('trackList').children).indexOf(currentTrack)];
-                playTrack(file, currentTrack);
-            }
-        }
-
-        document.getElementById('headerPlayButton').addEventListener('click', togglePlayPause);
-        document.getElementById('playButton').addEventListener('click', togglePlayPause);
-
-        document.getElementById('previousButton').addEventListener('click', function () {
-            if (currentTrack && currentTrack.previousElementSibling) {
-                const previousTrack = currentTrack.previousElementSibling;
-                const file = audioFileInput.files[Array.from(document.getElementById('trackList').children).indexOf(previousTrack)];
-                playTrack(file, previousTrack);
-                updateControlButtons();
-            }
-        });
-
-        document.getElementById('nextButton').addEventListener('click', function () {
-            if (currentTrack && currentTrack.nextElementSibling) {
-                const nextTrack = currentTrack.nextElementSibling;
-                const file = audioFileInput.files[Array.from(document.getElementById('trackList').children).indexOf(nextTrack)];
-                playTrack(file, nextTrack);
-                updateControlButtons();
-            }
-        });
 
         // Update progress bar
         setInterval(function () {
@@ -233,36 +247,8 @@
             }
         });
 
-        // Function to update 3D visualization (to be implemented in app.js)
-        function updateVisualization(audioData) {
-            // Implement 3D visualization update logic here
-            // This function should be called periodically during playback
-        }
-
-        // Create an AnalyserNode to get real-time audio data
-        const analyser = audioContext.createAnalyser();
-        analyser.fftSize = 2048;
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
-        // Connect the AnalyserNode
-        if (audioSource) {
-            audioSource.connect(analyser);
-            analyser.connect(audioContext.destination);
-        }
 
 
-        // Animation function to continuously update the visualization
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if (isPlaying) {
-                analyser.getByteFrequencyData(dataArray);
-                updateVisualization(dataArray);
-            }
-        }
-
-        animate();
     </script>
 </body>
 

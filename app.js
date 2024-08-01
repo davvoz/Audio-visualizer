@@ -23,7 +23,82 @@ class AudioPlayer {
         document.getElementById('trackList').addEventListener('click', this.handleTrackListClick.bind(this));
         document.getElementById('progressContainer').addEventListener('click', this.seekAudio.bind(this));
         document.getElementById('volume').addEventListener('input', this.setVolume.bind(this));
+        //listenPlaylist
+        document.getElementById('listenPlaylist').addEventListener('click', this.listenPlaylist.bind(this));
     }
+
+    async fetchAudioFile(url) {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        return new Blob([arrayBuffer], { type: 'audio/mpeg' });
+    }
+
+    async listenPlaylist() {
+        //mostra il contenitore dello spinner
+        document.getElementById('loading').classList.remove('hidden');
+        const lucioGiolliTracks = [
+            { name: 'Arabian nights', url: 'assets/arabian_night.mp3' },
+            { name: 'BB choir felio gbb o gh5g (1)', url: 'assets/bb choir felio gbb o gh5g (1).mp3' },
+            { name: 'BB choir felio gbb o gh5g', url: 'assets/bb choir felio gbb o gh5g.mp3' },
+            { name: 'Bloody mind', url: 'assets/bloody_mind.mp3' },
+            { name: 'Btgty choir felio Ssing o gh5g', url: 'assets/btgty choir felio Ssing o gh5g.mp3' },
+            { name: 'Calm and war', url: 'assets/calm_and_war.mp3' },
+            { name: 'Choir felio Ssing Nights rg bgg sitaro gh5g (1)', url: 'assets/choir felio Ssing Nights rg bgg sitaro gh5g (1).mp3' },
+            { name: 'Dark tzigane', url: 'assets/dark_tzigane.mp3' },
+            { name: 'Death waltzer', url: 'assets/death_waltzer.mp3' },
+            { name: 'Die happy', url: 'assets/die_happy.mp3' },
+            { name: 'Distorted child', url: 'assets/distorted_child.mp3' },
+            { name: 'Drum and grezzo', url: 'assets/drum_and_grezzo.mp3' },
+            { name: 'Elctronic disease', url: 'assets/elctronic_disease.mp3' },
+            { name: 'Electronic cello', url: 'assets/electronic_cello.mp3' },
+            { name: 'Epic tune', url: 'assets/epic_tune.mp3' },
+            { name: 'Gitan', url: 'assets/gitan.mp3' },
+            { name: 'Indian night', url: 'assets/indian_night.mp3' },
+            { name: 'Industrial dream', url: 'assets/industrial_dream.mp3' },
+            { name: 'Industrial drum', url: 'assets/industrial_drum.mp3' },
+            { name: 'Lolbgf choir felio Ssing o gh5g (1)', url: 'assets/lolbgf choir felio Ssing o gh5g (1).mp3' },
+            { name: 'Lolbgf choir felio Ssing o gh5g (2)', url: 'assets/lolbgf choir felio Ssing o gh5g (2).mp3' },
+            { name: 'Lolbgf choir felio Ssing o gh5g', url: 'assets/lolbgf choir felio Ssing o gh5g.mp3' },
+            { name: 'Mechanical nightmare', url: 'assets/mechanical_nightmare.mp3' },
+            { name: 'Mechanica nightmare melodic', url: 'assets/mechanica_nightmare_melodic.mp3' },
+            { name: 'Monk ballad', url: 'assets/monk_ballad.mp3' },
+            { name: 'Neoclassical dreams', url: 'assets/neoclassical_dreams.mp4' },
+            { name: 'Non volevo diventare una bambola stupida e inutile', url: 'assets/non_volevo_diventare_una_bambola_stupida e inutile.mp3' },
+            { name: 'Raw monk', url: 'assets/raw_monk.mp3' },
+            { name: 'Siete bruciat dannati', url: 'assets/siete_bruciat_dannati.mp3' },
+            { name: 'Suspended in the void', url: 'assets/suspended in the void.mp3' },
+            { name: 'Tribal circuits', url: 'assets/tribal_circuits.mp3' },
+            { name: 'Vo vale fede (1)', url: 'assets/Vo vale fede (1).mp3' },
+            { name: 'Vo vale fede', url: 'assets/Vo vale fede.mp3' },
+            { name: 'VPROVao vale fede (1)', url: 'assets/VPROVao vale fede (1).mp3' },
+            { name: 'VPROVao vale fede (3)', url: 'assets/VPROVao vale fede (3).mp3' },
+            { name: 'VPROVao vale fede (4)', url: 'assets/VPROVao vale fede (4).mp3' },
+            { name: 'VPROVao vale fede', url: 'assets/VPROVao vale fede.mp3' }
+        ];
+
+        this.audioQueue = await Promise.all(lucioGiolliTracks.map(async track => {
+            const blob = await this.fetchAudioFile(track.url);
+            return new File([blob], track.name, { type: 'audio/mpeg' });
+        }));
+
+        this.updateTrackList();
+        document.getElementById('welcome-message').style.display = 'none';
+        //chiudi lo spinner
+        //chiudi il contenitore dello spinner
+        document.getElementById('loading').classList.add('hidden');
+        //rileva se la tracklist se è collassata dal toggle
+        const isCollapsed = document.getElementById('trackList').classList.contains('collapsed');
+        if (isCollapsed) {
+            document.getElementById('trackList').classList.toggle('collapsed');
+        }
+        // If no track is currently playing, start playing the first track
+        if (this.currentAudioIndex === -1 && this.audioQueue.length > 0) {
+            this.currentAudioIndex = 0;
+            this.playNextAudio();
+        }
+    }
+
+
 
     setVolume(event) {
         if (this.audio) {
@@ -173,13 +248,13 @@ class AudioPlayer {
             document.querySelector('.track').offsetHeight;
         const posizione = //calcolo la posizione della track corrente
             this.currentAudioIndex * altezzaRiga;
-        
-            //andiamoci con un animazione
+
+        //andiamoci con un animazione
         document.getElementById('trackList').scrollTo({
             top: posizione,
             behavior: 'smooth'
         });
-    
+
         this.updateButtonStates();
     }
 

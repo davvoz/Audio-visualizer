@@ -33,18 +33,17 @@
     <div id="container">
         <div id="welcome-message">
             <h1>Welcome to the 3D Audio Visualizer! 🎵✨</h1>
-            <p>Get ready for an extraordinary musical experience! This isn't your usual boring audio player...</p>
-            <p>Imagine being able to <strong>see</strong> your music dancing and moving in 3D. Yes, you heard right:
-                your music will come to life before your eyes! 👀🕺</p>
+            <p>Experience music like never before with our extraordinary 3D Audio Visualizer!</p>
+            <p>Immerse yourself in a mesmerizing audio-visual journey where your music comes to life in stunning 3D visuals.</p>
             <p>Here's what you can do:</p>
             <ul>
-                <li>Upload your favorite audio tracks (the more you upload, the more fun we'll have!)</li>
-                <li>We can load more than one simultaneously</li>
-                <li>Press play and watch the magic happen on the screen</li>
-                <li>Experiment with the controls to customize your visual experience</li>
+                <li>Upload your favorite audio tracks and watch them dance and move in 3D.</li>
+                <li>Load multiple tracks simultaneously for an even more immersive experience.</li>
+                <li>You can also choose from our default playlist of tracks to get started.</li>
+                <li>Press play and witness the magic unfold on your screen.</li>
+                <li>Customize your visual experience with the interactive controls.</li>
             </ul>
-            <p>Are you ready to transform your ears into eyes? Upload your first track and let's start the show! 🎉🎧
-            </p>
+            <p>Are you ready to transform your listening experience into a visual spectacle? Upload your first track and let the show begin! 🎉🎧</p>
         </div>
     </div>
     <div id="controls">
@@ -160,6 +159,28 @@
             ];
 
             const trackList = document.getElementById('trackList');
+            let loadedTracks = 0;
+            const totalTracks = lucioGiolliTracks.length;
+
+            document.getElementById('loading').classList.remove('hidden');
+            
+            const loadingMessages = [
+                "Starting up the audio magic...",
+                "Tuning the virtual instruments...",
+                "Warming up the digital speakers...",
+                "Preparing for an auditory adventure...",
+                "Almost there! Final sound checks...",
+                "Get ready for an explosion of sound!"
+            ];
+            
+            let messageIndex = 0;
+            const loadingMessageElement = document.getElementById('loading-message');
+            
+            const messageInterval = setInterval(() => {
+                loadingMessageElement.textContent = loadingMessages[messageIndex];
+                messageIndex = (messageIndex + 1) % loadingMessages.length;
+            }, 500);
+
             lucioGiolliTracks.forEach((track, index) => {
                 const trackElement = document.createElement('div');
                 trackElement.className = 'track';
@@ -169,9 +190,18 @@
                 `;
                 trackList.appendChild(trackElement);
 
+                // Simulate loading delay
+                setTimeout(() => {
+                    loadedTracks++;
+                    if (loadedTracks === totalTracks) {
+                        clearInterval(messageInterval);
+                        document.getElementById('loading').classList.add('hidden');
+                        showWelcomeMessage();
+                    }
+                }, 1000 * index); // Adjust this value to control the simulated loading time
             });
         });
-
+           
         function showWelcomeMessage() {
             const trackList = document.getElementById('trackList');
             const welcomeMessage = document.getElementById('welcome-message');

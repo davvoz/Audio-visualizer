@@ -346,5 +346,15 @@ ul {
 @media (max-width: 768px) {
     #welcome-message {
         width: 90%;
+        padding: 15px;
+    }
+
+    #welcome-message h1 {
+        font-size: 1.5em;
+    }
+
+    #welcome-message p {
+        font-size: 1em;
+        margin-bottom: 10px;
     }
 }

@@ -20,6 +20,8 @@ import { PsychedelicDreamVisualizer } from './visualizers/psychedelicDreamVisual
 import { NeonCityVisualizer } from './visualizers/neonCityVisualizer.js';
 //visualizers\matrixCodeVisualizer.js
 import { MatrixCodeVisualizer } from './visualizers/matrixCodeVisualizer.js';
+import { ImmaginePulsanteVisualizer } from './visualizers/immaginePulsante.js';
+import { AudioReactiveImageModifier, AudioReactiveImageVisualizer } from './visualizers/audioReactiveImage.js';
 export class GUIController {
     constructor(audioVisualizer) {
         this.audioVisualizer = audioVisualizer;
@@ -53,6 +55,8 @@ export class GUIController {
             NeonCity: NeonCityVisualizer,
             Bars: BarVisualizer,
             MatrixCode: MatrixCodeVisualizer,
+            ImmaginePulsante: ImmaginePulsanteVisualizer,
+            AudioReactiveImage: AudioReactiveImageVisualizer
         };
 
         this.gui.add(this.controls, 'visualization', Object.keys(visualizers)).onChange((value) => {

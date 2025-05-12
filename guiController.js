@@ -21,7 +21,7 @@ import { NeonCityVisualizer } from './visualizers/neonCityVisualizer.js';
 //visualizers\matrixCodeVisualizer.js
 import { MatrixCodeVisualizer } from './visualizers/matrixCodeVisualizer.js';
 import { ImmaginePulsanteVisualizer } from './visualizers/immaginePulsante.js';
-import { AudioReactiveImageModifier, AudioReactiveImageVisualizer } from './visualizers/audioReactiveImage.js';
+import {  AudioReactiveImageVisualizer } from './visualizers/audioReactiveImage.js';
 export class GUIController {
     constructor(audioVisualizer) {
         this.audioVisualizer = audioVisualizer;
